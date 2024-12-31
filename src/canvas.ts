@@ -193,6 +193,50 @@ export function generateCanvas(): void {
 
   fetchData();
 
+        // Optional
+      // enable typing text
+stage.on('click', (event: any) => {
+  if (event.target === stage) {
+    const pointerPosition = stage.getPointerPosition();
+
+    if (!pointerPosition) return;
+
+    const text = document.createElement('div');
+    text.contentEditable = 'true';
+    text.style.background = 'transparent';
+    text.style.border = 'none';
+    text.style.position = 'absolute';
+    text.style.left = `${pointerPosition.x}px`;
+    text.style.top = `${pointerPosition.y}px`;
+    text.style.zIndex = '10';
+    document.body.appendChild(text);
+
+    text.focus();
+
+    text.addEventListener('blur', () => {
+      if (text.textContent && text.textContent.trim() !== '') {
+        // Add the entered text to the canvas
+        addTextToCanvas(
+          pointerPosition.x,
+          pointerPosition.y,
+          text.textContent.trim(),
+        );
+      }
+
+      // Remove the text input element from the DOM
+      document.body.removeChild(text);
+    });
+
+    // Handle Enter key
+    text.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (e.key === 'Enter') {
+        e.preventDefault(); // Prevent default Enter key behavior
+        text.blur(); // Trigger the blur event
+      }
+    });
+  }
+});
+
   // resize canvas on resize window
   function resizeCanvas(): void {
     stage.width(window.innerWidth);
