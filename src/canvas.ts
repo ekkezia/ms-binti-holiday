@@ -166,21 +166,79 @@ export function generateCanvas(): void {
 
             layer.add(group);
 
-            group.on('dragmove', () => {
-              const newPos = group.position();
-              pos.text(`[${Math.round(newPos.x)}, ${Math.round(newPos.y)}]`);
-            });
+              // Update text when group is moved
+              group.on('dragmove', async () => {
+                const newPos = group.position();
+                pos.text(`[${Math.round(newPos.x)}, ${Math.round(newPos.y)}]`);
+                text.fill('fuchsia');
+                pos.fill('fuchsia');
+                if (ipAddress) {
+                  ipAddress.fill('fuchsia');
+                }
+              });
 
-            group.on('dragend', () => {
-              const newPos = group.position();
-              updateImageData(
-                imageData.id,
-                Math.round(newPos.x),
-                Math.round(newPos.y),
-                img.width(),
-                img.height(),
-              );
-            });
+              group.on('dragend', async () => {
+                const newIpAddress = await getIpAddress();
+
+                text.fill('black');
+                pos.fill('black');
+
+                if (newIpAddress) ipAddress.text(newIpAddress);
+
+                if (ipAddress) {
+                  ipAddress.fill('black');
+                }
+
+                const newPos = group.position();
+
+                updateImageData(
+                  imageData.id,
+                  Math.round(newPos.x),
+                  Math.round(newPos.y),
+                  imageData.width,
+                  imageData.height,
+                );
+              });
+
+              const tr = new Konva.Transformer({
+                nodes: [img],
+                keepRatio: false,
+                flipEnabled: false,
+                boundBoxFunc: (oldBox, newBox) => {
+                  if (
+                    Math.abs(newBox.width) < 10 ||
+                    Math.abs(newBox.height) < 10
+                  ) {
+                    return oldBox;
+                  }
+                  return newBox;
+                },
+              });
+
+              // Add transformer to the layer
+              layer.add(tr);
+
+              img.on('transform', () => {
+                img.setAttrs({
+                  scaleX: 1,
+                  scaleY: 1,
+                  width: img.width() * img.scaleX(),
+                  height: img.height() * img.scaleX(),
+                });
+              });
+
+              img.on('transformend', () => {
+                console.log('width', img.width() * img.scaleX());
+                const newPos = group.position();
+
+                updateImageData(
+                  imageData.id,
+                  newPos.x,
+                  newPos.y,
+                  img.width() * img.scaleX(),
+                  img.height() * img.scaleX(),
+                );
+              });
           },
         );
       });
