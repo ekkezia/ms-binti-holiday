@@ -1,8 +1,9 @@
 import { supabase } from '../config/supabase';
 import Konva from 'konva';
 import { ImageData } from '../types/types';
+import { Layer } from 'konva/lib/Layer';
 
-export function generateCanvas(): void {
+export function generateCanvas(layer: Layer): void {
   // Konva stage
   const stage = new Konva.Stage({
     container: 'container',
@@ -11,7 +12,6 @@ export function generateCanvas(): void {
     draggable: true,
   });
 
-  const layer = new Konva.Layer();
   stage.add(layer);
 
   // Title
@@ -42,37 +42,37 @@ export function generateCanvas(): void {
   }
 
   // Add text to canvas
-  async function addTextToCanvas(x: number, y: number, textContent: string): Promise<void> {
-    const ipAddress = await getIpAddress();
+  // async function addTextToCanvas(x: number, y: number, textContent: string): Promise<void> {
+  //   const ipAddress = await getIpAddress();
 
-    const text = new Konva.Text({
-      x,
-      y,
-      text: textContent,
-      fontSize: 20,
-      fontFamily: 'Arial',
-      fill: 'black',
-      draggable: true,
-    });
+  //   const text = new Konva.Text({
+  //     x,
+  //     y,
+  //     text: textContent,
+  //     fontSize: 20,
+  //     fontFamily: 'Arial',
+  //     fill: 'black',
+  //     draggable: true,
+  //   });
 
-    layer.add(text);
-    layer.draw();
+  //   layer.add(text);
+  //   layer.draw();
 
-    try {
-      const { data, error } = await supabase
-        .from('ms-binti-holiday')
-        .insert([{ text: textContent, x, y, ip_address: ipAddress }])
-        .select();
+  //   try {
+  //     const { data, error } = await supabase
+  //       .from('ms-binti-holiday')
+  //       .insert([{ text: textContent, x, y, ip_address: ipAddress }])
+  //       .select();
 
-      if (error) {
-        console.error('Error inserting text:', error);
-      } else {
-        console.log('Text inserted:', data);
-      }
-    } catch (error) {
-      console.error('Unexpected error:', error);
-    }
-  }
+  //     if (error) {
+  //       console.error('Error inserting text:', error);
+  //     } else {
+  //       console.log('Text inserted:', data);
+  //     }
+  //   } catch (error) {
+  //     console.error('Unexpected error:', error);
+  //   }
+  // }
 
   // Update image data in Supabase
   async function updateImageData(
@@ -121,6 +121,9 @@ export function generateCanvas(): void {
           y: imageData.y || 0,
           draggable: true,
         });
+
+        // add id to the group
+        group.id(`${imageData.id}`);
 
         // Description text
         const text = new Konva.Text({
@@ -204,7 +207,7 @@ export function generateCanvas(): void {
                 nodes: [img],
                 keepRatio: false,
                 flipEnabled: false,
-                boundBoxFunc: (oldBox, newBox) => {
+                boundBoxFunc: (oldBox: any, newBox: { width: number; height: number; }) => {
                   if (
                     Math.abs(newBox.width) < 10 ||
                     Math.abs(newBox.height) < 10
@@ -253,47 +256,47 @@ export function generateCanvas(): void {
 
         // Optional
       // enable typing text
-stage.on('click', (event: any) => {
-  if (event.target === stage) {
-    const pointerPosition = stage.getPointerPosition();
+// stage.on('click', (event: any) => {
+//   if (event.target === stage) {
+//     const pointerPosition = stage.getPointerPosition();
 
-    if (!pointerPosition) return;
+//     if (!pointerPosition) return;
 
-    const text = document.createElement('div');
-    text.contentEditable = 'true';
-    text.style.background = 'transparent';
-    text.style.border = 'none';
-    text.style.position = 'absolute';
-    text.style.left = `${pointerPosition.x}px`;
-    text.style.top = `${pointerPosition.y}px`;
-    text.style.zIndex = '10';
-    document.body.appendChild(text);
+//     const text = document.createElement('div');
+//     text.contentEditable = 'true';
+//     text.style.background = 'transparent';
+//     text.style.border = 'none';
+//     text.style.position = 'absolute';
+//     text.style.left = `${pointerPosition.x}px`;
+//     text.style.top = `${pointerPosition.y}px`;
+//     text.style.zIndex = '10';
+//     document.body.appendChild(text);
 
-    text.focus();
+//     text.focus();
 
-    text.addEventListener('blur', () => {
-      if (text.textContent && text.textContent.trim() !== '') {
-        // Add the entered text to the canvas
-        addTextToCanvas(
-          pointerPosition.x,
-          pointerPosition.y,
-          text.textContent.trim(),
-        );
-      }
+//     text.addEventListener('blur', () => {
+//       if (text.textContent && text.textContent.trim() !== '') {
+//         // Add the entered text to the canvas
+//         addTextToCanvas(
+//           pointerPosition.x,
+//           pointerPosition.y,
+//           text.textContent.trim(),
+//         );
+//       }
 
-      // Remove the text input element from the DOM
-      document.body.removeChild(text);
-    });
+//       // Remove the text input element from the DOM
+//       document.body.removeChild(text);
+//     });
 
-    // Handle Enter key
-    text.addEventListener('keydown', (e: KeyboardEvent) => {
-      if (e.key === 'Enter') {
-        e.preventDefault(); // Prevent default Enter key behavior
-        text.blur(); // Trigger the blur event
-      }
-    });
-  }
-});
+//     // Handle Enter key
+//     text.addEventListener('keydown', (e: KeyboardEvent) => {
+//       if (e.key === 'Enter') {
+//         e.preventDefault(); // Prevent default Enter key behavior
+//         text.blur(); // Trigger the blur event
+//       }
+//     });
+//   }
+// });
 
   // resize canvas on resize window
   function resizeCanvas(): void {
