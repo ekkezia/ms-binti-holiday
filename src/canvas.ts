@@ -10,24 +10,88 @@ export function generateCanvas(layer: Layer): void {
     width: window.innerWidth,
     height: window.innerHeight,
     draggable: true,
+    x: 200,
+    y: 100,
+    scaleX: 0.25,
+    scaleY: 0.25
   });
 
   stage.add(layer);
 
   // Title
-  const title = new Konva.Text({
-    text: "MISS BINTI'S HOLIDAY",
-    fontSize: 40,
-    fontFamily: 'Helvetica',
+  const title_ms = new Konva.Text({
+    text: "Ms.",
+    fontSize: 150,
+    fontFamily: 'Jacquarda Bastarda 9',
     fontStyle: 'bold',
-    fill: 'fuchsia',
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
+    fill: 'black',
+    x: window.innerWidth / 2 + 2150,
+    y: window.innerHeight / 2 + 1800,
+    textAlign: 'center',
+  });
+  const title_b = new Konva.Text({
+    text: "B",
+    fontSize: 300,
+    fontFamily: 'Jacquarda Bastarda 9',
+    fontStyle: 'bold',
+    fill: '#00AAFF',
+    stroke: 'black',
+    x: window.innerWidth / 2 + 2500,
+    y: window.innerHeight / 2 + 1700,
+    textAlign: 'center',
+  });
+  const title_inti= new Konva.Text({
+    text: "inti's",
+    fontSize: 150,
+    fontFamily: 'Itim',
+    fontStyle: 'bold',
+    fill: 'black',
+    x: window.innerWidth / 2 + 2780,
+    y: window.innerHeight / 2 + 1800,
+    textAlign: 'center',
+  });
+  const title_h= new Konva.Text({
+    text: "H",
+    fontSize: 300,
+    fontFamily: 'Jacquarda Bastarda 9',
+    fontStyle: 'bold',
+    fill: 'black',
+    stroke: '#00AAFF',
+    x: window.innerWidth / 2 + 3200,
+    y: window.innerHeight / 2 + 1700,
     textAlign: 'center',
   });
 
-  title.x((stage.width() - title.width()) / 2);
-  layer.add(title);
+  const title_oli= new Konva.Text({
+    text: "oli",
+    fontSize: 150,
+    fontFamily: 'Itim',
+    fontStyle: 'bold',
+    fill: 'black',
+    x: window.innerWidth / 2 + 3450,
+    y: window.innerHeight / 2 + 1800,
+    textAlign: 'center',
+  });
+  const title_day= new Konva.Text({
+    text: "day",
+    fontSize: 150,
+    fontFamily: 'Itim',
+    fontStyle: 'bold',
+    fill: '#00AAFF',
+    stroke: 'black',
+    x: window.innerWidth / 2 + 3610,
+    y: window.innerHeight / 2 + 1800,
+    textAlign: 'center',
+  });
+
+
+
+  layer.add(title_ms);
+  layer.add(title_b);
+  layer.add(title_inti);
+  layer.add(title_h);
+  layer.add(title_oli);
+  layer.add(title_day);
 
   // Fetch IP address
   async function getIpAddress(): Promise<string | null> {
@@ -127,8 +191,8 @@ export function generateCanvas(layer: Layer): void {
 
         // Description text
         const text = new Konva.Text({
-          text: imageData.text || '',
-          fontSize: 12,
+          text: imageData.text?.slice(16, 27) || '',
+          fontSize: 30,
           fontFamily: 'Helvetica',
           fill: 'black',
           y: (imageData.height || 0) + 5,
@@ -137,19 +201,19 @@ export function generateCanvas(layer: Layer): void {
         // Position text
         const pos = new Konva.Text({
           text: `[${imageData.x || 0}, ${imageData.y || 0}]`,
-          fontSize: 12,
+          fontSize: 30,
           fontFamily: 'Helvetica',
           fill: 'black',
-          y: (imageData.height || 0) + 20,
+          y: (imageData.height || 0) + 5,
         });
 
         // IP Address text
         const ipAddress = new Konva.Text({
           text: imageData.ip_address || '',
-          fontSize: 10,
+          fontSize: 30,
           fontFamily: 'Helvetica',
           fill: 'black',
-          y: -15,
+          y: -30,
         });
 
         // Load the image
@@ -163,7 +227,7 @@ export function generateCanvas(layer: Layer): void {
             });
 
             group.add(img);
-            group.add(text);
+            // group.add(text);
             group.add(pos);
             group.add(ipAddress);
 
@@ -205,8 +269,12 @@ export function generateCanvas(layer: Layer): void {
 
               const tr = new Konva.Transformer({
                 nodes: [img],
-                keepRatio: false,
+                keepRatio: true,
                 flipEnabled: false,
+                anchorSize: 4,
+                rotateEnabled: false,
+                  anchorStroke: 'gray', // Anchor stroke color
+  anchorFill: 'white', // Anchor fill color
                 boundBoxFunc: (oldBox: any, newBox: { width: number; height: number; }) => {
                   if (
                     Math.abs(newBox.width) < 10 ||
