@@ -28,7 +28,7 @@ export function generateResetButton(layer: Layer): void {
       const dataToBeReset = data?.filter((item: { ip_address: null; }) => item.ip_address !== null) || [];
 
       // Fetch original image data locally
-      const response = await fetch('/data/images.json');
+      const response = await fetch('https://lmgbcuolwhkqoowxnaik.supabase.co/storage/v1/object/public/ms-binti-holiday//images.json');
       const imagesData: ImageData[] = await response.json();
 
       for (let i = 0; i < dataToBeReset.length; i++) {
