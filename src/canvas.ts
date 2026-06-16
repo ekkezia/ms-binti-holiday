@@ -1,4 +1,5 @@
 import { supabase } from '../config/supabase';
+import { getPublicAssetUrl } from '../config/public-assets';
 import Konva from 'konva';
 import { ImageData } from '../types/types';
 import { Layer } from 'konva/lib/Layer';
@@ -218,7 +219,7 @@ export function generateCanvas(layer: Layer): void {
 
         // Load the image
         Konva.Image.fromURL(
-          `https://lmgbcuolwhkqoowxnaik.supabase.co/storage/v1/object/public/ms-binti-holiday/${imageData.src}.jpeg`,
+          getPublicAssetUrl(`${imageData.src}.jpeg`),
           (img) => {
             img.setAttrs({
               width: imageData.width || 100,
